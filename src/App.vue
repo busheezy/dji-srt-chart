@@ -5,23 +5,40 @@
         <h1 class="title">DJI SRT Chart</h1>
         <div class="notification mt-4">
           <div v-if="!file">
-            <h2 class="subtitle">Upload the srt file</h2>
             <FileInput @file="onInput" />
           </div>
 
           <div v-else>
-            <h2 class="subtitle">
-              {{ file.name }}
-              <b-button @click="file = null" size="is-small" class="is-warning">
-                Upload New
-              </b-button>
-            </h2>
+            <div class="columns">
+              <div class="column">
+                <b-field
+                  class="file is-primary is-fullwidth"
+                  :class="{ 'has-name': !!file }"
+                >
+                  <b-upload v-model="file" @input="onInput" class="file-label">
+                    <span class="file-cta">
+                      <b-icon class="file-icon" icon="upload"></b-icon>
+                      <span class="file-label">Click to upload</span>
+                    </span>
+                    <span class="file-name" v-if="file">
+                      {{ file.name }}
+                    </span>
+                  </b-upload>
+                </b-field>
+              </div>
 
-            <b-select v-model="currentStat">
-              <option v-for="stat in stats" :key="stat.name" :value="stat.name">
-                {{ stat.label }}
-              </option>
-            </b-select>
+              <div class="column">
+                <b-select v-model="currentStat" expanded>
+                  <option
+                    v-for="stat in stats"
+                    :key="stat.name"
+                    :value="stat.name"
+                  >
+                    {{ stat.label }}
+                  </option>
+                </b-select>
+              </div>
+            </div>
 
             <Stat
               :points="points"

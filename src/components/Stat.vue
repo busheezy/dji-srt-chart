@@ -44,6 +44,8 @@ export default {
             label: this.statObj.label,
             data: this.dataSets,
             pointRadius: 0,
+            backgroundColor: "rgba(205, 0, 255, 0.2)",
+            borderColor: "rgba(205, 0, 255, 0.2)",
           },
         ],
       };
