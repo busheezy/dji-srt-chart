@@ -10,21 +10,24 @@
           </div>
 
           <div v-else>
-            <h2 class="subtitle">{{ file.name }}</h2>
+            <h2 class="subtitle">
+              {{ file.name }}
+              <b-button @click="file = null" size="is-small" class="is-warning">
+                Upload New
+              </b-button>
+            </h2>
 
             <b-select v-model="currentStat">
-              <option value="delay">Delay</option>
-              <option value="uavBat">Quad Battery</option>
-              <option value="glsBat">Goggles Battery</option>
-              <option value="bitrate">Bitrate</option>
-              <option value="rcSignal">RC Signal</option>
+              <option v-for="stat in stats" :key="stat.name" :value="stat.name">
+                {{ stat.label }}
+              </option>
             </b-select>
 
-            <Delay v-if="currentStat === 'delay'" :points="points" />
-            <Bitrate v-if="currentStat === 'bitrate'" :points="points" />
-            <GlsBat v-if="currentStat === 'glsBat'" :points="points" />
-            <UAVBat v-if="currentStat === 'uavBat'" :points="points" />
-            <RCSignal v-if="currentStat === 'rcSignal'" :points="points" />
+            <Stat
+              :points="points"
+              :key="currentStatObj.name"
+              :statObj="currentStatObj"
+            />
           </div>
         </div>
       </section>
@@ -34,13 +37,9 @@
 
 <script>
 import FileInput from "./components/FileInput.vue";
-import Delay from "./components/Delay.vue";
-import Bitrate from "./components/Bitrate.vue";
-import GlsBat from "./components/GlsBat.vue";
-import RCSignal from "./components/RCSignal.vue";
-import UAVBat from "./components/UAVBat.vue";
+import Stat from "./components/Stat.vue";
 
-import { map, each } from "lodash";
+import { map, each, find } from "lodash";
 import { parseSync } from "subtitle";
 
 export default {
@@ -50,17 +49,45 @@ export default {
   },
   components: {
     FileInput,
-    Delay,
-    Bitrate,
-    GlsBat,
-    RCSignal,
-    UAVBat,
+    Stat,
+  },
+  computed: {
+    currentStatObj() {
+      return find(this.stats, { name: this.currentStat });
+    },
   },
   data() {
     return {
       file: null,
       currentStat: "delay",
       points: [],
+      stats: [
+        {
+          name: "delay",
+          label: "Delay",
+          unit: "ms",
+        },
+        {
+          name: "bitrate",
+          label: "Bitrate",
+          unit: "Mbps",
+        },
+        {
+          name: "glsBat",
+          label: "Goggles Battery",
+          unit: "%",
+        },
+        {
+          name: "rcSignal",
+          label: "RC Signal",
+          unit: "Signal",
+        },
+        {
+          name: "uavBat",
+          label: "Drone Battery",
+          unit: "Voltage",
+        },
+      ],
     };
   },
   methods: {

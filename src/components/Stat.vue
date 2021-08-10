@@ -6,7 +6,7 @@
       ref="line"
       :options="options"
     />
-    <b-button @click="resetZoom">Reset</b-button>
+    <b-button @click="resetZoom">Reset Zoom</b-button>
   </div>
 </template>
 
@@ -23,29 +23,17 @@ export default {
       type: Array,
       required: true,
     },
+    statObj: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
-    rcSignalData() {
+    dataSets() {
       return map(this.points, (point) => {
         return {
           x: point.time / 1000,
-          y: point.rcSignal,
-        };
-      });
-    },
-    signalData() {
-      return map(this.points, (point) => {
-        return {
-          x: point.time / 1000,
-          y: point.signal,
-        };
-      });
-    },
-    chData() {
-      return map(this.points, (point) => {
-        return {
-          x: point.time / 1000,
-          y: point.ch,
+          y: point[this.statObj.name],
         };
       });
     },
@@ -53,21 +41,9 @@ export default {
       return {
         datasets: [
           {
-            label: "RC Signal",
-            data: this.rcSignalData,
+            label: this.statObj.label,
+            data: this.dataSets,
             pointRadius: 0,
-          },
-          {
-            label: "Channel",
-            data: this.signalData,
-            pointRadius: 0,
-            hidden: true,
-          },
-          {
-            label: "RC Signal",
-            data: this.chData,
-            pointRadius: 0,
-            hidden: true,
           },
         ],
       };
@@ -107,7 +83,7 @@ export default {
               type: "linear",
               scaleLabel: {
                 display: true,
-                labelString: "Delay",
+                labelString: this.statObj.unit,
               },
             },
           ],
