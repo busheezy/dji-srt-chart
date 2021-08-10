@@ -47,6 +47,9 @@
             />
           </div>
         </div>
+        <div>
+          <a href="/DJIG0004.srt">Download Sample</a>
+        </div>
       </section>
     </div>
   </div>
