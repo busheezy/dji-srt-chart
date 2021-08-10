@@ -47,8 +47,8 @@
             />
           </div>
         </div>
-        <div>
-          <a href="/dji-srt-chart/DJIG0004.srt">Download Sample</a>
+        <div v-if="!file">
+          <a :href="`${publicPath}DJIG0004.srt`">Download Sample</a>
         </div>
       </section>
     </div>
@@ -81,6 +81,7 @@ export default {
       file: null,
       currentStat: "delay",
       points: [],
+      publicPath: process.env.BASE_URL,
       stats: [
         {
           name: "delay",
