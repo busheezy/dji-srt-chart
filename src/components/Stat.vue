@@ -8,12 +8,14 @@
     />
 
     <b-button @click="resetZoom">Reset</b-button>
+    <br />
+    <div class="tag is-info mt-3">Displaying {{ totalPoints }} points.</div>
   </div>
 </template>
 
 <script>
 import LineChart from "./LineChart.js";
-import { map } from "lodash";
+import { map, reduce } from "lodash";
 import randomColor from "randomcolor";
 
 export default {
@@ -31,6 +33,15 @@ export default {
     },
   },
   computed: {
+    totalPoints() {
+      return reduce(
+        this.pointsCollection,
+        (sum, { points }) => {
+          return sum + points.length;
+        },
+        0
+      );
+    },
     dataSets() {
       return {
         datasets: map(this.pointsCollection, ({ points, fileName }) => {
