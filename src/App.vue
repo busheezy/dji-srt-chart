@@ -4,8 +4,8 @@
       <section class="section has-text-centered">
         <h1 class="title">DJI SRT Chart</h1>
         <div class="notification mt-4">
-          <div v-if="!file">
-            <FileInput @file="onInput" />
+          <div v-if="files.length === 0">
+            <FileInput @input="onInput" />
           </div>
 
           <div v-else>
@@ -13,15 +13,22 @@
               <div class="column">
                 <b-field
                   class="file is-primary is-fullwidth"
-                  :class="{ 'has-name': !!file }"
+                  :class="{ 'has-name': files.length > 0 }"
                 >
-                  <b-upload v-model="file" @input="onInput" class="file-label">
+                  <b-upload
+                    v-model="files"
+                    @input="onInput"
+                    multiple
+                    class="file-label"
+                    accept=".srt"
+                    native
+                  >
                     <span class="file-cta">
                       <b-icon class="file-icon" icon="upload"></b-icon>
                       <span class="file-label">Click to upload</span>
                     </span>
-                    <span class="file-name" v-if="file">
-                      {{ file.name }}
+                    <span class="file-name" v-if="files.length > 0">
+                      viewing {{ files.length }} files
                     </span>
                   </b-upload>
                 </b-field>
@@ -41,14 +48,11 @@
             </div>
 
             <Stat
-              :points="points"
+              :pointsCollection="pointsCollection"
               :key="currentStatObj.name"
               :statObj="currentStatObj"
             />
           </div>
-        </div>
-        <div v-if="!file">
-          <a :href="`${publicPath}DJIG0004.srt`">Download Sample</a>
         </div>
       </section>
     </div>
@@ -61,6 +65,8 @@ import Stat from "./components/Stat.vue";
 
 import { map, each, find } from "lodash";
 import { parseSync } from "subtitle";
+
+import Bluebird from "bluebird";
 
 export default {
   name: "App",
@@ -78,9 +84,9 @@ export default {
   },
   data() {
     return {
-      file: null,
+      files: [],
       currentStat: "delay",
-      points: [],
+      pointsCollection: [],
       publicPath: process.env.BASE_URL,
       stats: [
         {
@@ -112,33 +118,40 @@ export default {
     };
   },
   methods: {
-    async onInput(file) {
-      this.file = file;
+    async onInput(files) {
+      this.files = files;
 
-      const fileText = await file.text();
-      const subtitles = parseSync(fileText);
+      const pointsCollection = await Bluebird.map(files, async (file) => {
+        const fileText = await file.text();
+        const subtitles = parseSync(fileText);
 
-      const points = map(subtitles, (subtitle) => {
-        const stats = subtitle.data.text.split(" ");
-        const statsObj = {};
+        const points = map(subtitles, (subtitle) => {
+          const stats = subtitle.data.text.split(" ");
+          const statsObj = {};
 
-        each(stats, (stat) => {
-          const [statName, statValue] = stat.split(":");
-          const realStatValue = statValue
-            .replace("V", "")
-            .replace("ms", "")
-            .replace("Mbps", "")
-            .replace("%", "");
-          statsObj[statName] = Number(realStatValue);
+          each(stats, (stat) => {
+            const [statName, statValue] = stat.split(":");
+            const realStatValue = statValue
+              .replace("V", "")
+              .replace("ms", "")
+              .replace("Mbps", "")
+              .replace("%", "");
+            statsObj[statName] = Number(realStatValue);
+          });
+
+          return {
+            ...statsObj,
+            time: subtitle.data.start,
+          };
         });
 
         return {
-          ...statsObj,
-          time: subtitle.data.start,
+          points,
+          fileName: file.name,
         };
       });
 
-      this.points = points;
+      this.pointsCollection = pointsCollection;
     },
   },
 };

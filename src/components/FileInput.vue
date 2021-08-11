@@ -1,22 +1,37 @@
 <template>
   <div>
     <b-field class="file">
-      <b-upload @input="sendUp" accept=".srt" v-model="file" expanded>
+      <b-upload
+        multiple
+        @input="sendUp"
+        accept=".srt"
+        v-model="files"
+        native
+        expanded
+      >
         <a class="button is-primary is-fullwidth">
           <b-icon icon="upload"></b-icon>
-          <span>{{ file ? file.name : "Click to upload" }}</span>
+          <span>Click to upload</span>
         </a>
       </b-upload>
     </b-field>
 
     <b-field>
-      <b-upload @input="sendUp" v-model="file" drag-drop expanded>
+      <b-upload
+        multiple
+        @input="sendUp"
+        accept=".srt"
+        v-model="files"
+        drag-drop
+        expanded
+        native
+      >
         <section class="section">
           <div class="content has-text-centered">
             <p>
               <b-icon icon="upload" size="is-large"></b-icon>
             </p>
-            <p>Drop your file here or click to upload</p>
+            <p>Drop your files here or click to upload</p>
           </div>
         </section>
       </b-upload>
@@ -27,13 +42,13 @@
 <script>
 export default {
   methods: {
-    sendUp(file) {
-      this.$emit("file", file);
+    sendUp(files) {
+      this.$emit("input", files);
     },
   },
   data() {
     return {
-      file: null,
+      files: [],
     };
   },
 };

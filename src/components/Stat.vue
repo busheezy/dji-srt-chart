@@ -2,24 +2,26 @@
   <div>
     <LineChart
       :key="componentKey"
-      :chart-data="chartData"
+      :chart-data="dataSets"
       ref="line"
       :options="options"
     />
-    <b-button @click="resetZoom">Reset Zoom</b-button>
+
+    <b-button @click="resetZoom">Reset</b-button>
   </div>
 </template>
 
 <script>
 import LineChart from "./LineChart.js";
 import { map } from "lodash";
+import randomColor from "randomcolor";
 
 export default {
   components: {
     LineChart,
   },
   props: {
-    points: {
+    pointsCollection: {
       type: Array,
       required: true,
     },
@@ -30,24 +32,25 @@ export default {
   },
   computed: {
     dataSets() {
-      return map(this.points, (point) => {
-        return {
-          x: point.time / 1000,
-          y: point[this.statObj.name],
-        };
-      });
-    },
-    chartData() {
       return {
-        datasets: [
-          {
-            label: this.statObj.label,
-            data: this.dataSets,
+        datasets: map(this.pointsCollection, ({ points, fileName }) => {
+          return {
+            label: fileName,
+            data: map(points, (point) => {
+              return {
+                x: point.time / 1000,
+                y: point[this.statObj.name],
+              };
+            }),
             pointRadius: 0,
-            backgroundColor: "rgba(205, 0, 255, 0.2)",
+            backgroundColor: randomColor({
+              luminosity: "dark",
+              format: "rgba",
+              alpha: 0.2,
+            }),
             borderWidth: 0,
-          },
-        ],
+          };
+        }),
       };
     },
   },
