@@ -72,7 +72,7 @@ export default {
   },
   data() {
     return {
-      componentKey: 0,
+      componentKey: 1,
       options: {
         animation: {
           duration: 0,
