@@ -44,7 +44,7 @@ export default {
     },
     dataSets() {
       return {
-        datasets: map(this.pointsCollection, ({ points, fileName }) => {
+        datasets: map(this.pointsCollection, ({ points, fileName }, i) => {
           return {
             label: fileName,
             data: map(points, (point) => {
@@ -58,6 +58,7 @@ export default {
               luminosity: "dark",
               format: "rgba",
               alpha: 0.2,
+              seed: i * 1337,
             }),
             borderWidth: 0,
           };
@@ -72,7 +73,7 @@ export default {
   },
   data() {
     return {
-      componentKey: 1,
+      componentKey: 0,
       options: {
         animation: {
           duration: 0,
@@ -91,6 +92,10 @@ export default {
               scaleLabel: {
                 display: true,
                 labelString: "Time",
+              },
+              ticks: {
+                sampleSize: 100,
+                stepSize: 60,
               },
             },
           ],
