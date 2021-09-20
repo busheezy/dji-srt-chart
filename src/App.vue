@@ -107,6 +107,11 @@ export default {
         {
           name: "rcSignal",
           label: "RC Signal",
+          unit: "RC Signal",
+        },
+        {
+          name: "signal",
+          label: "Signal",
           unit: "Signal",
         },
         {
